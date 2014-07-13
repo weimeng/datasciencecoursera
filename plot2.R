@@ -22,5 +22,5 @@ plot(subset$Time, subset$Global_active_power,
      type = "n", 
      xlab = "",
      ylab = "Global Active Power (kilowatts)")
-lines(subset$Time, y = as.numeric(subset$Global_active_power))
+lines(subset$Time, y = subset$Global_active_power)
 dev.off()
