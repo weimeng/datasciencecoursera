@@ -1,0 +1,8 @@
+# Ignore RStudio files
+.RData
+.Rhistory
+.Rproj.user
+*.Rproj
+
+# Ignore data
+household_power_consumption.txt
