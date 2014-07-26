@@ -14,10 +14,11 @@ annualTotalEmissions <- dcast(annualEmissions, year ~ variable,
 
 png(filename = "plot1.png", width = 480, height = 480)
 
-barplot(annualTotalEmissions$Emissions,
-        names.arg = annualTotalEmissions$year,
-        main = "Total PM2.5 emissions from 1999 to 2008",
-        xlab = "Year",
-        ylab = "PM2.5 emissions in millions")
+plot(annualTotalEmissions$year, annualTotalEmissions$Emissions,
+     main = "Total PM2.5 emissions from 1999 to 2008",
+     pch = 16,
+     type = "o",
+     xlab = "Year",
+     ylab = "PM2.5 emissions in millions")
 
 dev.off()
