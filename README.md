@@ -30,12 +30,13 @@ The `run_analysis.R` script is designed to read the project data above and:
    measurement.
 3. Use descriptive activity names to name the activities in the data set
 4. Appropriately label the data set with descriptive variable names.
-5. Create a second, independent tidy data set in a `tidydata.csv` file with the
+5. Create a second, independent tidy data set in a `tidydata.txt` file with the
    average of each variable for each activity and each subject.
 
-The resulting `tidydata.csv` file can be read using the `read.csv` function in R.
+The resulting `tidydata.txt` file can be read using the `read.table` function
+in R.
 
 Codebook
 --------
 A codebook accompanies the `run_analysis.R` script and describes the data which
-can be found in `tidydata.csv`. Please refer to `codebook.MD` for more details.
+can be found in `tidydata.txt`. Please refer to `codebook.MD` for more details.

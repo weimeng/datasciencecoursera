@@ -1,6 +1,6 @@
-Codebook for `tidydata.csv`
+Codebook for `tidydata.txt`
 ===========================
-The data used to generate `tidydata.csv` was obtained from a link provided as
+The data used to generate `tidydata.txt` was obtained from a link provided as
 part of the course project. The link to retrieve the data (accurate as of 27
 July 2014) is:
 
@@ -23,13 +23,13 @@ However, in brief, the `run_analysis.R` does the following:
    measurement.
 3. Use descriptive activity names to name the activities in the data set
 4. Appropriately label the data set with descriptive variable names.
-5. Create a second, independent tidy data set in a `tidydata.csv` file with the
+5. Create a second, independent tidy data set in a `tidydata.txt` file with the
    average of each variable for each activity and each subject.
 
 Format & variables
 ------------------
-`tidydata.csv` is a comma-separated values file which can be parsed by R's
-`read.csv` function. The data contains the following identifier columns:
+`tidydata.txt` is a comma-separated values file which can be parsed by R's
+`read.table` function. The data contains the following identifier columns:
 
 | Column Name | Description                                                    |
 | ----------- | -------------------------------------------------------------- |

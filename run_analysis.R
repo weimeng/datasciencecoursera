@@ -106,10 +106,10 @@ wantedMelt <- melt(wantedSet, id = c("Subject", "Activity"),
                            measure.vars = names(wantedSet)[-c(1, 2)])
 tidySet <- dcast(wantedMelt, Subject + Activity ~ variable, mean)
 
-# Check if tidydata.csv exists. If it does, delete it.
-if (file.exists("./tidydata.csv")) { unlink("./tidydata.csv") }
+# Check if tidydata.txt exists. If it does, delete it.
+if (file.exists("./tidydata.txt")) { unlink("./tidydata.txt") }
 
-# Write tidy data to tidydata.csv file
-tidyData <- file("./tidydata.csv", "w")
-write.csv(tidySet, file=tidyData)
+# Write tidy data to tidydata.txt file
+tidyData <- file("./tidydata.txt", "w")
+write.table(tidySet, file=tidyData)
 close(tidyData)
