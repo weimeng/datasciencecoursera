@@ -6,3 +6,7 @@
 
 # R data files from past sessions
 .Rdata
+.Rproj.user
+
+# Ignore data set
+UCI\ HAR\ Dataset
