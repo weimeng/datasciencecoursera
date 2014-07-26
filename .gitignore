@@ -1,3 +1,6 @@
 .Rproj.user
 .Rhistory
 .RData
+
+# Ignore project data
+exdata-data-NEI_data
