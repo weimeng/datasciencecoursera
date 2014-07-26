@@ -17,14 +17,13 @@ typeBaltimoreEmissions$type <- as.factor(typeBaltimoreEmissions$type)
 
 library(ggplot2)
 
-png(filename = "plot3.png", width = 480, height = 480)
+png(filename = "plot3.png", width = 720, height = 480)
 
 g <- ggplot(typeBaltimoreEmissions, aes(year, Emissions))
 
-p <- g + geom_smooth(aes(color = type)) +
+p <- g + geom_smooth(method = "lm", aes(color = type)) + geom_point() + facet_grid(. ~ type) +
      labs(title = "PM2.5 Emissions in Baltimore City by source") +
-     labs(x = "Year", y = "PM2.5 Emissions") +
-     scale_colour_discrete("Source")
+     labs(x = "Year", y = "PM2.5 Emissions")
 
 print(p)
 
