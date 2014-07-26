@@ -12,9 +12,10 @@ annualBaltimoreEmissions <- dcast(BaltimoreEmissions, year ~ variable, sum)
 
 png(filename = "plot2.png", width = 480, height = 480)
 
-barplot(annualBaltimoreEmissions$Emissions,
-        names.arg = annualBaltimoreEmissions$year,
+plot(annualBaltimoreEmissions$year, annualBaltimoreEmissions$Emissions,
         main = "Baltimore City, Maryland PM2.5 emissions from 1999 to 2008",
+        pch = 16,
+        type = "o",
         xlab = "Year",
         ylab = "PM2.5 emissions")
 
