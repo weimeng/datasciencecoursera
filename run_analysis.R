@@ -87,6 +87,7 @@ names(wantedSet) <- gsub("^f", "Frequency", names(wantedSet))
 # Make it clearer what the source of the measurements were
 names(wantedSet) <- gsub("Acc", "Accelerometer", names(wantedSet))
 names(wantedSet) <- gsub("Gyro", "Gyrometer", names(wantedSet))
+names(wantedSet) <- gsub("Mag", "Magnitude", names(wantedSet))
 
 # Make cases consistent with rest of label
 names(wantedSet) <- gsub("mean", "Mean", names(wantedSet))
