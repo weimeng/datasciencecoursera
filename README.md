@@ -36,6 +36,10 @@ The `run_analysis.R` script is designed to read the project data above and:
 The resulting `tidydata.txt` file can be read using the `read.table` function
 in R.
 
+The `run_analysis.R` script is well-documented and there are in-line comments
+which explain each step taken to transform the data. Please view the file for
+further details.
+
 Codebook
 --------
 A codebook accompanies the `run_analysis.R` script and describes the data which
