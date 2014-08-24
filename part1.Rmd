@@ -60,7 +60,7 @@ theoretical.variance
 > Show that the distribution is approximately normal.
 
 ```{r}
-hist(simulation, prob=TRUE, col="grey", border="dark grey")
+hist(simulation, prob=TRUE, breaks=50, col="grey", border="dark grey")
 lines(density(simulation), lwd=2, col="red")
 # Plot a normal distribution using theoretical parameters
 x.norm <- seq(min(density(simulation)$x), max(density(simulation)$x), length=1000)
