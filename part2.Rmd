@@ -1,0 +1,128 @@
+---
+title: "Statistical Inference course project - Data analysis"
+author: "Wei-Meng Lee"
+output: pdf_document
+---
+
+### Question 1
+
+> Load the ToothGrowth data and perform some basic exploratory data analyses 
+
+```{r}
+data(ToothGrowth)
+toothgrowth <- transform(ToothGrowth, supp = factor(supp))
+boxplot(len ~ dose * supp, toothgrowth, xlab = "Dose & supplement", ylab = "Tooth length")
+```
+
+### Question 2
+
+> Provide a basic summary of the data
+
+The data is the length of teeth in each of 10 guinea pigs at each of three dose 
+levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange 
+juice (OJ) or ascorbic acid (VC)).
+
+The basic exploration of the data suggests that an increase in the dose of 
+supplement results in an increase in tooth length for both OJ and VC. It appears 
+that OJ is more effective than VC at lower dose levels. At higher dose levels, 
+the difference becomes unclear.
+
+### Question 3
+
+> Use confidence intervals and hypothesis tests to compare tooth growth by supp
+> and dose.
+
+```{r, echo=FALSE, results='hide'}
+by_supp <- split(toothgrowth, toothgrowth$supp)
+
+vc <- by_supp$VC
+oj <- by_supp$OJ
+
+vc_by_dose <- split(vc, vc$dose)
+oj_by_dose <- split(oj, oj$dose)
+```
+
+#### Comparison by supp
+
+* h0: A given dose of OJ does not result in an increase in tooth length compared
+to the same dose of VC
+* h1: A given dose of OJ results in an increase in tooth length compared to the same dose of VC
+
+```{r, echo=FALSE, results='hide'}
+t.test(oj_by_dose$"0.5"$len)
+t.test(vc_by_dose$"0.5"$len)
+```
+
+Using Student's t-Test (`t.test()` in R), we find that for a 0.5 dose of OJ, 
+the 95% confidence interval is `[10.04, 16.42]`, with a mean of 13.23. For a 
+0.5 dose of VC, the 95% confidence interval is `[6.02, 9.94]` with a mean of 
+7.98. Since the interval for a 0.5 dose of OJ is above the interval for a 0.5 
+dose of VC, we reject the null hypothesis and accept the alternative hypothesis 
+as valid.
+
+```{r, echo=FALSE, results='hide'}
+t.test(oj_by_dose$"1"$len)
+t.test(vc_by_dose$"1"$len)
+```
+
+For a 1.0 dose of OJ, the 95% confidence interval is `[19.90, 25.50]`, with a 
+mean of 22.7. For a 1.0 dose of VC, the 95% confidence interval is 
+`[14.97, 18.57]` with a mean of 16.77. Since the interval for a 1.0 dose of OJ 
+is above the interval for a 1.0 dose of VC, we reject the null hypothesis and 
+accept the alternative hypothesis as valid.
+
+```{r, echo=FALSE, results='hide'}
+t.test(oj_by_dose$"2"$len)
+t.test(vc_by_dose$"2"$len)
+```
+
+For a 2.0 dose of OJ, the 95% confidence interval is `[24.2, 28.0]`, with a mean of 26.06. For a 2.0 dose of VC, the 95% confidence interval is `[22.71, 29.57]` with a mean of 26.14. Since the intervals for a 2.0 dose of OJ and VC overlap, we accept the null hypothesis h0 as valid.
+
+#### Comparison by dose
+
+* h0: An increase in dose of a supplement does not result in an increase in tooth length
+* h1: An increase in dose of a supplment results in an increase in tooth length
+
+```{r, echo=FALSE, results='hide'}
+t.test(oj_by_dose$"1"$len)
+t.test(oj_by_dose$"2"$len)
+```
+
+The exploratory data analysis revealed an uncertain case in the comparison of a 
+1.0 dose of OJ with a 2.0 dose of OJ. We will therefore investigate this case. 
+Using Student's t-Test (`t.test()` in R), we find that for a 1.0 dose of OJ, the 95% confidence interval is `[19.90, 25.50]`, with a mean of 22.7. For a 2.0 dose of OJ, the 95% confidence interval is `[24.16, 27.96]` with a mean of 
+26.06.
+
+Since the upper part of the interval for the 1.0 dose of OJ overlaps with the 
+lower part of the interval for the  2.0 ose of OJ, we accept the null 
+hypothesis as valid.
+
+While it appears that the exploratory data analysis shows a clear increase in 
+effectiveness for an increaes in doses within each supplement, we will compare a 1.0 dose of VC with a 2.0 dose of VC for illustrative purposes.
+
+```{r, echo=FALSE, results='hide'}
+t.test(vc_by_dose$"1"$len)
+t.test(vc_by_dose$"2"$len)
+```
+
+Using Student's t-Test (`t.test()` in R), we find that for a 1.0 dose of VC, the 95% confidence interval is `[14.97, 18.57]` with a mean of 16.77. For a 2.0 dose of VC, the 95% confidence interval is `[22.71, 29.57]` with a mean of 
+26.14.
+
+Since the lower limit of the interval for the 2.0 dose of VC is well above the 
+upper limit of the interval for the 1.0 dose of VC, we reject the null 
+hypothesis and also affirm that the alternative hypothesis h1 is supported by 
+the data.
+
+### Question 4
+
+> State your conclusions and the assumptions needed for your conclusions.
+
+Based on a comparison of equivalent dosage of each supplement using Student's
+t-Test, we can conclude that orange juice (OJ) is more effective than ascorbic 
+acid (VC) at the 0.5 and 1.0 dose levels. However, there is no difference 
+between OJ and VC at the 2.0 dose level.
+
+Based on a comparison of dosages within each supplement, we can conclude that an increase in dosage results in an increase in tooth growth, with the exception of an increase in of dosage of OJ from 1.0 to 2.0.
+
+These conclusions are based on the assumption that the underlying data is 
+normally distributed and that each data observation was an independent trial.
