@@ -83,3 +83,9 @@ replace_exponent_factors <- function(exponents) {
 
 econ_data$PROPDMGEXP <- replace_exponent_factors(econ_data$PROPDMGEXP)
 econ_data$CROPDMGEXP <- replace_exponent_factors(econ_data$CROPDMGEXP)
+
+econ_data$PROPDMG <- econ_data$PROPDMG * (10 ** econ_data$PROPDMGEXP)
+econ_data$CROPDMG <- econ_data$CROPDMG * (10 ** econ_data$CROPDMGEXP)
+
+econ_impact <- aggregate(PROPDMG + CROPDMG ~ EVTYPE, econ_data, FUN = sum)
+econ_impact <- econ_impact[order(econ_impact$"PROPDMG + CROPDMG", decreasing = TRUE),]
