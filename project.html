@@ -103,6 +103,7 @@ training &lt;- data_train_clean[train_index, ]
 testing &lt;- data_train_clean[-train_index, ]</code></pre>
 <p>A random forest model was selected to predict the classification based on the data as it is a highly accurate algorithm which performs well with multiple input variables (in this case, we have 53 variables).</p>
 <p>In addition, random forests have additional beneficial characteristics for the purposes of this assignment: (1) it gives estimates of which variables are important in the classification used for prediction, (2) there is no need to cross-validate as it gives an unbiased estimate of the test set error in the form of the OOB (out of bag) error estimate.</p>
+<p>See <a href="https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm">Random Forests by Leo Breiman and Adele Cutler</a> for further information.</p>
 <pre class="r"><code>model &lt;- randomForest(classe ~ ., data = training)
 model</code></pre>
 <pre><code>## 

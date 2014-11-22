@@ -93,6 +93,8 @@ important in the classification used for prediction, (2) there is no need to
 cross-validate as it gives an unbiased estimate of the test set error in the 
 form of the OOB (out of bag) error estimate.
 
+See [Random Forests by Leo Breiman and Adele Cutler](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm) for further information.
+
 ```{r}
 model <- randomForest(classe ~ ., data = training)
 model
