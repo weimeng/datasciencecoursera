@@ -8,34 +8,43 @@ shinyUI(fluidPage(
     sidebarPanel(
       titlePanel("Petal"),
       sliderInput("Petal.Length",
-                  "Length:",
-                  min = 1.0,
+                  "Length (in cm):",
+                  min = 0,
                   max = 7.0,
-                  value = 3.0,
+                  value = 0,
                   step = 0.1),
       sliderInput("Petal.Width",
-                  "Width:",
-                  min = 0.1,
+                  "Width (in cm):",
+                  min = 0,
                   max = 2.5,
-                  value = 1.3,
+                  value = 0,
                   step = 0.1),
       titlePanel("Sepal"),
       sliderInput("Sepal.Length",
-                  "Length:",
-                  min = 4.0,
+                  "Length (in cm):",
+                  min = 0,
                   max = 8.0,
-                  value = 5.8,
+                  value = 0,
                   step = 0.1),
       sliderInput("Sepal.Width",
-                  "Width:",
-                  min = 2.0,
+                  "Width (in cm):",
+                  min = 0.0,
                   max = 5.0,
-                  value = 3.0,
+                  value = 0,
                   step = 0.1)
     ),
 
     mainPanel(
-      textOutput("prediction")
+      h2("Instructions"),
+      tags$ol(
+        tags$li("Enter the petal and sepal measurements of your iris species in the left panel"),
+        tags$li("Wait for the server to perform prediction"),
+        tags$li("View your results below")),
+      h2("Results"),
+      tags$p("Based on the measurements you've entered on the left, your iris species is ",
+             tags$strong("Iris ",
+                         textOutput("prediction", inline = TRUE)),
+             ".")
     )
   )
 ))
