@@ -1,5 +1,7 @@
 library(shiny)
+library(e1071)
 library(caret)
+library(randomForest)
 
 data(iris)
 model <- train(Species ~ ., data = iris)
