@@ -1,0 +1,120 @@
+---
+title: "Effect of car transmission type on MPG"
+output: pdf_document
+---
+
+# Executive Summary
+
+In this report, we are to (1) examine whether an automatic or manual 
+transmission is better for MPG and (2) quantify the MPG difference between the
+two types of transmissions. After performing a multiple linear regression to 
+find the best-fit model, we conclude that the type of transmission does not
+actually directly impact MPG.
+
+# Data Loading & Preparation
+
+The data is retrieved from the `mtcars` data set provided by the `datasets`
+package.
+
+```{r}
+data(mtcars)
+```
+
+# Exploratory Data Analysis
+
+The `mpg` data was plotted against all other variables (see Figure 1 in the 
+appendix). An initial overview of the `mpg ~ am` boxplot seem to suggest that cars with
+automatic transmissions seem to achieve less miles per gallon than cars with
+manual transmissions. However, the plots of the other data also show some
+correlation of `mpg` with the other variables available, suggesting the presence
+of one or more confounding variables.
+
+# Model fitting
+
+## Variable selection
+
+A measurement of each variable's correlation with `mpg` reveals that there is an
+especially strong negative correlation with `cyl`, `disp` and `wt`:
+
+```{r}
+cor(mtcars$mpg, mtcars)
+```
+
+Based of this initial exploration, we will focus our efforts on `cyl`, `disp`
+and `wt`.
+
+## Model testing
+
+```{r}
+fit1 <- lm(mpg ~ am, data = mtcars)
+fit2 <- lm(mpg ~ am + wt, data = mtcars)
+fit3 <- lm(mpg ~ am + wt + cyl, data = mtcars)
+fit4 <- lm(mpg ~ am + wt + cyl + disp, data = mtcars)
+anova(fit1, fit2, fit3, fit4)
+```
+
+From this, we can see that `wt` and `cyl` are both significant whereas `disp` is
+not, based on the p-values in a nested model Anova analysis with an alpha of
+0.05.
+
+Now, let's test the significance of `am` to our model:
+
+```{r}
+fit1 <- lm(mpg ~ wt + cyl, data = mtcars)
+fit2 <- lm(mpg ~ wt + cyl + am, data = mtcars)
+anova(fit1, fit2)
+```
+
+Interestingly, it appears that `am` is not significant, with a p-value 
+significantly exceeding our alpha of 0.05. If we plot `mpg` against `wt` and 
+highlight `cyl`  and `am`  in the data points, we see that both `cyl` and `am`
+are proxy indicators of `wt`. The heavier a car, the more cylinders in the
+engine (see Figure 2). Also, cars with automatic transmissions are heavier than
+cars with manual transmissions (see Figure 3).
+
+Therefore, the model most illustrative of effect on a car's MPG would be:
+
+```{r}
+summary(lm(mpg ~ wt, data = mtcars))$coef
+```
+
+See Figure 4 for residual and diagnostic plots.
+
+# Conclusion
+
+Based on our findings, we can conclude that manual transmissions are better than
+automatic transmissions for MPG. However, this is not because of the transmission
+type, but instead because of the weight of the car.
+
+As for quantifying the MPG difference for weight, the true regressor, each 1000 
+lb increase in weight of a car results in about 5.3 less MPG.
+
+# Appendix
+
+## Figure 1
+
+```{r}
+par(mfrow = c(2,3))
+plot(mpg ~ ., data = mtcars)
+```
+
+## Figure 2
+
+```{r}
+plot(mtcars$wt, mtcars$mpg, pch=as.numeric(mtcars$cyl))
+legend("topright", legend = levels(as.factor(mtcars$cyl)), pch=c(4,6,8))
+```
+
+## Figure 3
+
+```{r}
+plot(mtcars$wt, mtcars$mpg, pch = mtcars$am)
+legend("topright", legend = c("automatic", "manual"), pch=as.numeric(levels(as.factor(mtcars$am))))
+```
+
+## Figure 4
+
+```{r}
+model <- lm(mpg ~ wt, data = mtcars)
+par(mfrow = c(2, 2)); plot(model)
+```
