@@ -1,0 +1,129 @@
+---
+title: "Classifying weight lifting exercises using human activity data"
+author: "Wei-Meng Lee"
+date: "22 November 2014"
+output: html_document
+---
+
+# Executive summmary
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible 
+to collect a large amount of data about personal activity relatively
+inexpensively. Six participants were tasked to use such devices as they 
+performed barbell lifts correctly and incorrectly in five different ways. 
+
+The goal of this project was to use the data recorded to correctly classify 20
+instantaneous readings of such devices into the appropriate exercises that were
+conducted. It was found that a random forest model  yields an accurate and 
+robust approach to the prediction.
+
+# Libraries used
+
+```{r}
+library(caret)
+library(randomForest)
+```
+
+# Data loading and cleaning
+
+The provided data files were downloaded into the `./data` directory and were
+then read into R using the `read.csv` command. It was decided to handle blank
+entries, "#DIV/0!" and "NA" as `NA` values.
+
+```{r}
+data_train <- read.csv("./data/pml-training.csv", na.strings = c("", "#DIV/0!", "NA"))
+data_test <- read.csv("./data/pml-testing.csv", na.strings = c("", "#DIV/0!", "NA"))
+```
+
+A simple data cleaning function was used to process both sets of data:
+
+```{r}
+clean_data <- function(data) {
+  cleaned_data <- data[8:length(data)]
+
+  cleaned_data_NAs <- apply(cleaned_data, 2, function(x) { sum(is.na(x)) })
+  cleaned_data <- cleaned_data[, which(cleaned_data_NAs == 0)]
+}
+```
+
+First, the function removes identifying information, such as participant names
+and timestamps, from the data as these are irrelevant to the prediction model.
+
+Next, all columns with any NA values were also removed from the data. While
+normally it would be prudent to retain at least some of these data or use an
+imputation strategy, this was deemed unnecessary as a casual inspection of the
+20 test cases to be predicted reveals that data from these columns are not
+present and will not have any impact in the prediction model.
+
+```{r}
+data_train_clean <- clean_data(data_train)
+data_test_clean <- clean_data(data_test)
+```
+
+After processing, we see that we are left with 53 variables or predictors in
+both the training and the test data sets:
+
+```{r}
+length(data_train_clean)
+```
+
+```{r}
+length(data_test_clean)
+```
+
+# Creating a model
+
+The provided training data was further split into training and testing sets in a
+70:30 ratio respectively. The training set will be used to train and fit the
+model, while the testing set will be used to test the model fit.
+
+```{r}
+train_index <- createDataPartition(data_train_clean$classe, p = 0.7, list = FALSE)
+training <- data_train_clean[train_index, ]
+testing <- data_train_clean[-train_index, ]
+```
+
+A random forest model was selected to predict the classification based on the
+data as it is a highly accurate algorithm which performs well with multiple
+input variables (in this case, we have 53 variables).
+
+In addition, random forests have additional beneficial characteristics for the
+purposes of this assignment: (1) it gives estimates of which variables are
+important in the classification used for prediction, (2) there is no need to
+cross-validate as it gives an unbiased estimate of the test set error in the 
+form of the OOB (out of bag) error estimate.
+
+See [Random Forests by Leo Breiman and Adele Cutler](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm) for further information.
+
+```{r}
+model <- randomForest(classe ~ ., data = training)
+model
+```
+
+The OOB estimate of error rate was 0.56%, which is satisfactory enough to 
+proceed to testing without the need to explore other prediction models.
+
+# Testing the model
+
+Using the model created, we now test against the remaining 30% of the data which
+was set aside as the testing data set:
+
+```{r}
+prediction <- predict(model, testing)
+confusionMatrix(testing$classe, prediction)
+```
+
+The accuracy of the prediction model as used on the testing data was 0.9935, or 
+99.35%. In other words, there was a 0.65% error rate, which is close to the 
+OOB error rate estimated by the random forest model.
+
+The model appears to be robust and adequate, so we will now proceed to use it to
+predict the classification of the 20 test cases provided in the original test
+set.
+
+# Predicting the 20 test cases
+
+```{r}
+final_prediction <- predict(model, data_test_clean)
+final_prediction
+```
