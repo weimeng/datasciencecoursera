@@ -3,3 +3,8 @@
 .Rhistory
 .Rproj.user
 *.Rproj
+
+# Ignore capstone data files
+10-dsscapstone-003/data
+10-dsscapstone-003/milestone_cache
+10-dsscapstone-003/milestone_files

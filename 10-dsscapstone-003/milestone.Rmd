@@ -1,0 +1,179 @@
+---
+title: "Milestone Report"
+author: "Wei-Meng Lee"
+date: "30 March 2015"
+output: html_document
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(tm)
+library(RWeka)
+library(slam)
+
+options(mc.cores=1) # Set this so RWeka plays nice with multicore processors
+
+twitter.filename <- "./data/final/en_US/en_US.twitter.txt"
+blogs.filename <- "./data/final/en_US/en_US.blogs.txt"
+news.filename <- "./data/final/en_US/en_US.news.txt"
+
+twitter.sample.filename <- "./data/sample/en_US/en_US.twitter.txt"
+blogs.sample.filename <- "./data/sample/en_US/en_US.blogs.txt"
+news.sample.filename <- "./data/sample/en_US/en_US.news.txt"
+```
+# Executive Summary
+
+This document contains an exploratory data analysis of the data provided for
+the Johns Hopkins Data Science Specialisation capstone project, as well as the
+general approach to be taken for design of the prediction algorithm. 
+
+This report is meant to demonstrate that the data was successfully downloaded
+and loaded, report any interesting findings and gather feedback on plans for the
+prediction algorithmn and eventual Shiny app.
+
+# Data Summary
+
+## Source
+
+The dataset (which can be downloaded [here](https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip)) 
+is prepared for the Johns Hopkins Data Science Capstone course, based on a 
+corpus called HC Copora. The corpora are English-language samples collected 
+from blogs, newspapers and Twitter by a web crawler and included in three text
+files: `en_US.blogs.txt`, `en_US.news.txt` and `en_US.twitter.txt` respectively. 
+
+More information on how the original corpora were collected is available [here](http://www.corpora.heliohost.org/aboutcorpus.html).
+
+## Exploratory Data Analysis
+
+An initial exploration of each text file's word and line count was performed 
+using the Unix `wc` utility. The results are presented below:
+
+|                        | blogs      | news       | twitter    | total       |
+|------------------------|------------|------------|------------|-------------|
+| Size (MB)              | 210.2      | 205.8      | 167.1      | 583.1       |
+| Number of lines        | 899,288    | 1,010,242  | 2,360,148  | 4,269,678   |
+| Number of words        | 37,334,690 | 34,372,720 | 30,374,206 | 102,081,616 |
+| Average words per line | 41.5       | 34.0       | 12.9       | 23.9        |
+
+As expected, text sources from Twitter have significantly lesser words per line
+as compared to blogs and newspapers due to the 160-character limit of the 
+medium. Blogs and newspapers are more alike, with blogs appearing to have more 
+words per line of text.
+
+For the next part of the analysis, a sample representing approximately 5 
+percent of each corpus was taken. Each sample is meant to be representative of
+the population and was collected using the following function:
+
+```{r}
+set.seed(42)
+
+sampleCorpus <- function(corpus) {
+  corpus.sample.nlines <- length(corpus) * 0.05
+  corpus.sample <- sample(corpus, corpus.sample.nlines)
+  return(corpus.sample)
+}
+```
+
+Each sample is then cleaned up, with character encoding and case standardised,
+and punctuation, whitespace and numbers removed. The following function was
+used to achieve this:
+
+```{r}
+corpusCleanup <- function(corpus) {
+  corpus <- tm_map(corpus, content_transformer(iconv), from = "latin1", to = "ASCII", sub = "")
+  corpus <- tm_map(corpus, content_transformer(tolower))
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, stripWhitespace)
+  corpus <- tm_map(corpus, removeNumbers)
+  return(corpus)
+}
+```
+
+Stop words were not removed at this stage as it is believed that they -- 
+together with bi-grams, tri-grams and 4-grams -- will form part of the
+future prediction algorithm.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+# Process blogs data
+blogs.data.con <- file(blogs.filename, "r")
+blogs <- readLines(blogs.data.con)
+close(blogs.data.con)
+blogs.sample <- sampleCorpus(blogs)
+
+# Process news data
+news.data.con <- file(news.filename, "r")
+news <- readLines(news.data.con)
+close(news.data.con)
+news.sample <- sampleCorpus(news)
+
+# Process Twitter data
+twitter.data.con <- file(twitter.filename, "r")
+twitter <- readLines(twitter.data.con)
+close(twitter.data.con)
+twitter.sample <- sampleCorpus(twitter)
+```
+
+```{r, echo=FALSE}
+UnigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 1, max = 1))
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
+blogs.corpus <- Corpus(VectorSource(blogs.sample))
+blogs.corpus <- corpusCleanup(blogs.corpus)
+blogs.unigrams <- TermDocumentMatrix(blogs.corpus, control = list(tokenize = UnigramTokenizer))
+blogs.unigrams.freq <- sort(row_sums(blogs.unigrams), decreasing = TRUE)
+
+news.corpus <- Corpus(VectorSource(news.sample))
+news.corpus <- corpusCleanup(news.corpus)
+news.unigrams <- TermDocumentMatrix(news.corpus, control = list(tokenize = UnigramTokenizer))
+news.unigrams.freq <- sort(row_sums(news.unigrams), decreasing = TRUE)
+
+twitter.corpus <- Corpus(VectorSource(twitter.sample))
+twitter.corpus <- corpusCleanup(twitter.corpus)
+twitter.unigrams <- TermDocumentMatrix(twitter.corpus, control = list(tokenize = UnigramTokenizer))
+twitter.unigrams.freq <- sort(row_sums(twitter.unigrams), decreasing = TRUE)
+```
+
+```{r, echo=FALSE}
+barplot(blogs.unigrams.freq[1:20], col=rainbow(20), las=2, main="20 most frequently used words in blogs corpus")
+```
+
+```{r, echo=FALSE}
+barplot(news.unigrams.freq[1:20], col=rainbow(20), las=2, main="20 most frequently used words in news corpus")
+```
+
+```{r, echo=FALSE}
+barplot(twitter.unigrams.freq[1:20], col=rainbow(20), las=2, main="20 most frequently used words in Twitter corpus")
+```
+
+The barplots of common words within the individual corpuses provide some
+additional insight:
+
+* First- and second-person pronouns ("you", "your") are much more common in the
+  blogs and Twitter corpora than in the news corpus
+* On a related note, third-person pronouns ("his", "they", etc.) and reported
+  speech constructs ("said") are more common in the news corpus than in the 
+  other corpora
+* A large amount of the top 20 words of each corpus consists of stop words. It
+  might therefore be necessary to exclude stop words from the prediction 
+  algorithm in the interests of performance as there would be less "noise" to
+  sift through.
+  
+# Prediction Algorithm
+
+While several steps have been identified to pre-process the corpora above
+(removal of whitespace characters, conversion to lowercase, etc.), additional
+steps may be added for the final algorithm. Some of the steps that are under
+consideration include:
+
+* the removal of profanity
+* the removal of stop words
+* use of the `qdap` package to correct spelling errors
+
+In addition, the frequency of bi-grams, tri-grams and 4-grams will have to be
+calculated to help train the prediction model.
+
+Throughout the design of the algorithm, the primary considerations are speed,
+followed by accuracy. Speed of the algorithm is more important than accuracy 
+as the final product will be a Shiny web app that is expected to deliver 
+near-instantaneous predictions based on user input. The product would be of no
+use if the user's need for instantaneous predictions are not satisfied.
