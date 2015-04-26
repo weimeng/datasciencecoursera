@@ -43,7 +43,12 @@ predictNextWord <- function(inputString) {
     nextWord <- "Please type some words in for prediction"
   } else if(numberOfWords == 1) {
     nextWord <- predictBigram(cleanedString)
-  } else if(numberOfWords >= 2) {
+  } else if(numberOfWords == 2) {
+    nextWord <- predictTrigram(cleanedString)
+  } else if(numberOfWords > 2) {
+    cleanedString <- strsplit(cleanedString, " ")
+    cleanedString <- cleanedString[(length(cleanedString) - 1):length(cleanedString)]
+    cleanedString <- paste(cleanedString, collapse = " ")
     nextWord <- predictTrigram(cleanedString)
   } else {
     nextWord <- "Placeholder..."  
