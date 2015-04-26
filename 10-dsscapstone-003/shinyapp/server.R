@@ -77,7 +77,9 @@ shinyServer(function(input, output) {
     predictNextWord(input$inputString)
   })  
   
-  output$nextWord <- renderText({
-    Suggestion()
-  })
+  output$nextWord_1 <- renderText({Suggestion()[1]})
+  output$nextWord_2 <- renderText({Suggestion()[2]})
+  output$nextWord_3 <- renderText({Suggestion()[3]})
+  output$nextWord_4 <- renderText({Suggestion()[4]})
+  output$nextWord_5 <- renderText({Suggestion()[5]})
 })

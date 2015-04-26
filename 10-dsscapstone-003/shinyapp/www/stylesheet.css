@@ -1,0 +1,37 @@
+#messageWell {
+  background-color: #FFF;
+  max-width: 700px;
+}
+
+#next-word-suggestions {
+  max-width: 700px;
+}
+
+.form-group.shiny-input-container {
+  width: 700px;
+}
+
+.btn {
+  margin-bottom: 1em;
+}
+
+#sendMessage.btn {
+  background-color: #4CD964;
+}
+
+.message {
+  padding: 0.5em;
+}
+
+.message.received {
+  background-color: #CCC;
+  border-radius: 5px 5px 5px 0;
+  margin-right: 250px;
+}
+
+.message.sent {
+  background-color: #007AFF;
+  border-radius: 5px 5px 0 5px;
+  color: #FFF;
+  margin-left: 250px;
+}
