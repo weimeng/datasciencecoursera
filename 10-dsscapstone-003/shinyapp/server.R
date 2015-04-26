@@ -1,7 +1,7 @@
 library(shiny)
 library(tm)
 
-# unigrams <- readRDS("unigrams.rds")
+unigrams <- readRDS("unigrams_short.rds")
 bigrams <- readRDS("bigrams.rds")
 trigrams <- readRDS("trigrams.rds")
 
@@ -12,6 +12,11 @@ characterCleanup <- function(character) {
   character <- removeNumbers(character)
   character <- stripWhitespace(character)
   return(character)
+}
+
+predictUnigram <- function() {
+  results <- names(head(unigrams))
+  return(results)
 }
 
 predictBigram <- function(input) {
@@ -37,23 +42,33 @@ predictNextWord <- function(inputString) {
     numberOfWords <- sapply(gregexpr("\\b\\W+\\b", cleanedString, perl = TRUE), function(x) sum(x>0) ) + 1    
   }
   
-  matchString <- paste("^", cleanedString, "$", sep = "")
+  splitString <- strsplit(cleanedString, " ")[[1]]
+  
+  nextWord <- c()
   
   if(numberOfWords == 0) {
-    nextWord <- "Please type some words in for prediction"
-  } else if(numberOfWords == 1) {
-    nextWord <- predictBigram(cleanedString)
-  } else if(numberOfWords == 2) {
-    nextWord <- predictTrigram(cleanedString)
-  } else if(numberOfWords > 2) {
-    cleanedString <- strsplit(cleanedString, " ")
-    cleanedString <- cleanedString[(length(cleanedString) - 1):length(cleanedString)]
-    cleanedString <- paste(cleanedString, collapse = " ")
-    nextWord <- predictTrigram(cleanedString)
-  } else {
-    nextWord <- "Placeholder..."  
+    nextWord <- "Start typing to get started!"
   }
   
+  if(numberOfWords > 2) {
+    cleanedString <- splitString[(length(splitString) - 1):length(splitString)]
+    cleanedString <- paste(cleanedString, collapse = " ")
+    nextWord <- predictTrigram(cleanedString)
+  }
+  
+  if(numberOfWords == 2) {
+    nextWord <- predictTrigram(cleanedString)
+  }
+  
+  if(length(nextWord) == 0) {
+    cleanedString <- splitString[(length(splitString))]
+    nextWord <- predictBigram(cleanedString)
+  }
+  
+  if(length(nextWord) == 0) {
+    nextWord <- predictUnigram()
+  }
+
   return(nextWord)
 }
 
