@@ -10,7 +10,7 @@ shinyUI(fluidPage(
   
   wellPanel(id = "messageWell",
     p(class = "received message", "Hello! Welcome to my final project for the Coursera-Johns Hopkins Data Science Specialisation Capstone module."),
-    p(class = "received message", "This Shiny app allows for simple next-word text prediction. Simply start typing in the text box below to get started."),
+    p(class = "received message", "This Shiny app allows for simple next-word text prediction. Simply start typing in the text box below to get started. It may take awhile for the prediction engine to start up. Please be patient!"),
     p(class = "received message", "You may click on any of the five suggested words below the text box to instantly add it to your sentence. Try it!"),
     p(class = "received message", "When you're done typing, click on 'Send Message' to send your message!")
   ),
